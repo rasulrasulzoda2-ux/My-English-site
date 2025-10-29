@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test: Present Simple</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Present Simple Test</h1>
+      <p>Test your knowledge of Present Simple tense</p>
+    </div>
+  </header>
+
+  <nav>
+    <input type="checkbox" id="mobile-menu-toggle" class="mobile-menu-toggle">
+    <label for="mobile-menu-toggle" class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+    </label>
+    <div class="nav-container">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li>
+          <a href="rules.html">Grammar Rules</a>
+          <ul>
+            <li><a href="rule-present-simple.html">Present Simple</a></li>
+            <li><a href="rule-present-continuous.html">Present Continuous</a></li>
+            <li><a href="rule-past-simple.html">Past Simple</a></li>
+            <li><a href="rule-future-simple.html">Future Simple</a></li>
+            <li><a href="rule-articles.html">Articles</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="dictionary.html">Dictionary</a>
+          <ul>
+            <li><a href="verbs.html">Irregular Verbs</a></li>
+            <li><a href="word-cards.html">Word Cards</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="tests.html">Tests</a>
+          <ul>
+            <li><a href="comperalative.html">Comparative & Superlative</a></li>
+            <li><a href="past-simple-test.html">Past Simple Test</a></li>
+            <li><a href="present-simple-test.html" class="nav-active">Present Simple Test</a></li>
+            <li><a href="present-continuous-test.html">Present Continuous Test</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <div class="hero-content">
+        <h2>Present Simple Tense Test</h2>
+        <p>Test your understanding of habits, general truths, and repeated actions</p>
+      </div>
+    </section>
+
+    <div class="test-instructions">
+      <h3>Test Instructions</h3>
+      <p>You have <strong>10 minutes</strong> to complete 20 questions. Choose the correct form of the verb for each sentence. Good luck!</p>
+    </div>
+
+    <div class="intro" id="introSection">
+      <div class="form-group">
+        <label for="username">Your Name:</label>
+        <input type="text" id="username" placeholder="Enter your name">
+      </div>
+      <button class="btn-primary" onclick="startTest()">Start Test</button>
+    </div>
+
+    <div id="timer" class="timer">Time left: 10:00</div>
+
+    <form id="quizForm">
+      <div id="questions"></div>
+      <div class="actions">
+        <button type="button" class="btn-primary" onclick="checkAnswers()">Check Answers</button>
+      </div>
+    </form>
+
+    <div id="result" class="quiz-container" style="display: none;"></div>
+
+    <section id="leaderboard" class="leaderboard">
+      <h2>🏆 Leaderboard</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Name</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody id="scoreList"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <p>&copy; 2025 English Learning Platform. Created for my portfolio.</p>
+    </div>
+  </footer>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDolx1CGyygN_sbWphyHCcE-twTM1L_U5A",
+      authDomain: "english-test-5454b.firebaseapp.com",
+      databaseURL: "https://english-test-5454b-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "english-test-5454b",
+      storageBucket: "english-test-5454b.appspot.com",
+      messagingSenderId: "325979388906",
+      appId: "1:325979388906:web:9dd9c3fec2330d97bad093",
+      measurementId: "G-JL3WK4R83C"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let countdown;
+    let timeLeft = 600;
+
+    const questions = [
+      { q: "She ____ to school every day.", options: { a: "go", b: "goes", c: "going", d: "gone" }, answer: "b", explanation: "For 'she', we add -es → goes." },
+      { q: "I ____ coffee in the morning.", options: { a: "drink", b: "drinks", c: "drank", d: "drinking" }, answer: "a", explanation: "First person singular → drink." },
+      { q: "They ____ football on Sundays.", options: { a: "play", b: "plays", c: "played", d: "playing" }, answer: "a", explanation: "Plural subject → play." },
+      { q: "He ____ not like pizza.", options: { a: "do", b: "does", c: "do not", d: "does not" }, answer: "d", explanation: "Negative Present Simple: 'does not'." },
+      { q: "____ you speak English?", options: { a: "Do", b: "Does", c: "Did", d: "Are" }, answer: "a", explanation: "For 'you', use 'Do'." },
+      { q: "My father ____ TV in the evenings.", options: { a: "watch", b: "watches", c: "watched", d: "watching" }, answer: "b", explanation: "For 'he', add -es → watches." },
+      { q: "We usually ____ to the park.", options: { a: "go", b: "goes", c: "going", d: "gone" }, answer: "a", explanation: "Plural subject → go." },
+      { q: "The sun ____ in the east.", options: { a: "rise", b: "rises", c: "rising", d: "rose" }, answer: "b", explanation: "General fact → rises." },
+      { q: "____ she read books every day?", options: { a: "Do", b: "Does", c: "Is", d: "Has" }, answer: "b", explanation: "For 'she', use 'Does'." },
+      { q: "I ____ never late for school.", options: { a: "am", b: "is", c: "are", d: "be" }, answer: "a", explanation: "'I am' is correct." },
+      { q: "He ____ tennis very well.", options: { a: "play", b: "plays", c: "playing", d: "played" }, answer: "b", explanation: "For 'he', add -s → plays." },
+      { q: "We ____ in a small town.", options: { a: "live", b: "lives", c: "living", d: "lived" }, answer: "a", explanation: "Plural subject → live." },
+      { q: "My dog ____ in the garden.", options: { a: "run", b: "runs", c: "running", d: "ran" }, answer: "b", explanation: "For 'dog', add -s → runs." },
+      { q: "____ your mother cook well?", options: { a: "Do", b: "Does", c: "Is", d: "Has" }, answer: "b", explanation: "For 'mother' → Does." },
+      { q: "Water ____ at 100°C.", options: { a: "boil", b: "boils", c: "boiled", d: "boiling" }, answer: "b", explanation: "Fact → boils." },
+      { q: "They often ____ their homework in the evening.", options: { a: "do", b: "does", c: "did", d: "doing" }, answer: "a", explanation: "Plural subject → do." },
+      { q: "She ____ breakfast at 8 o'clock.", options: { a: "have", b: "has", c: "having", d: "had" }, answer: "b", explanation: "For 'she', use 'has'." },
+      { q: "I ____ not like fish.", options: { a: "do", b: "does", c: "do not", d: "does not" }, answer: "c", explanation: "For 'I', negative → do not." },
+      { q: "He always ____ his bike to school.", options: { a: "ride", b: "rides", c: "rode", d: "riding" }, answer: "b", explanation: "For 'he', add -s → rides." },
+      { q: "We ____ happy together.", options: { a: "is", b: "are", c: "am", d: "be" }, answer: "b", explanation: "Plural subject → are." }
+    ];
+
+    function startTest() {
+      const name = document.getElementById("username").value.trim();
+      if (!name) {
+        alert("Please enter your name before you start.");
+        return;
+      }
+      document.getElementById("quizForm").style.display = "block";
+      document.getElementById("timer").style.display = "block";
+      document.getElementById("introSection").style.display = "none";
+      renderQuestions();
+      startTimer();
+      updateLeaderboard();
+    }
+
+    function renderQuestions() {
+      const container = document.getElementById("questions");
+      container.innerHTML = "";
+      questions.forEach((item, index) => {
+        const opts = item.options;
+        const optionHtml = Object.keys(opts).map(letter => {
+          return `<label class="options"><input type="radio" name="q${index}" value="${letter}"> (${letter}) ${opts[letter]}</label>`;
+        }).join("");
+        container.insertAdjacentHTML("beforeend", `
+          <div class="question">
+            <p>${item.q}</p>
+            <div class="options">${optionHtml}</div>
+            <span id="f${index}" class="feedback"></span>
+            <div id="e${index}" class="explanation"></div>
+          </div>
+        `);
+      });
+    }
+
+    function startTimer() {
+      const timerDisplay = document.getElementById("timer");
+      timerDisplay.textContent = "Time left: " + formatTime(timeLeft);
+      countdown = setInterval(() => {
+        timeLeft--;
+        timerDisplay.textContent = "Time left: " + formatTime(timeLeft);
+        if (timeLeft <= 0) {
+          clearInterval(countdown);
+          timerDisplay.textContent = "⏰ Time is up!";
+          checkAnswers();
+        }
+      }, 1000);
+    }
+
+    function formatTime(seconds) {
+      const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const s = String(seconds % 60).padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    function checkAnswers() {
+      let score = 0;
+      questions.forEach((item, index) => {
+        const radios = document.getElementsByName(`q${index}`);
+        let selected = "";
+        for (const r of radios) if (r.checked) selected = r.value;
+        const feedback = document.getElementById(`f${index}`);
+        const explanation = document.getElementById(`e${index}`);
+        if (selected === item.answer) {
+          feedback.textContent = "✔️ Correct";
+          feedback.className = "feedback correct";
+          explanation.textContent = "";
+          score += 5;
+        } else {
+          feedback.textContent = "❌ Incorrect";
+          feedback.className = "feedback incorrect";
+          const correctLetter = item.answer.toUpperCase();
+          const correctText = item.options[item.answer];
+          explanation.textContent = `Correct answer: (${correctLetter}) ${correctText}. ${item.explanation}`;
+        }
+      });
+      const username = document.getElementById("username").value.trim();
+      const resultElement = document.getElementById("result");
+      resultElement.style.display = "block";
+      resultElement.innerHTML = `<h3>Your Score: ${score} / ${questions.length * 5}</h3>`;
+      
+      if (username) {
+        db.ref("scores_present_simple").push({ name: username, score });
+      }
+      
+      updateLeaderboard();
+      clearInterval(countdown);
+    }
+
+    function updateLeaderboard() {
+      db.ref("scores_present_simple").orderByChild("score").limitToLast(5).once("value", snapshot => {
+        const list = document.getElementById("scoreList");
+        list.innerHTML = "";
+        const data = [];
+        snapshot.forEach(child => data.push(child.val()));
+        data.reverse().forEach((s, i) => {
+          const row = document.createElement("tr");
+          let rankClass = "";
+          if (i === 0) rankClass = "medal-gold";
+          else if (i === 1) rankClass = "medal-silver";
+          else if (i === 2) rankClass = "medal-bronze";
+          
+          row.innerHTML = `<td class="${rankClass}">${i + 1}</td><td>${s.name}</td><td>${s.score}</td>`;
+          list.appendChild(row);
+        });
+      });
+    }
+
+    // Initialize leaderboard
+    updateLeaderboard();
+  </script>
+</body>
+</html>
